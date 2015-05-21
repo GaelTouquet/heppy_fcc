@@ -30,10 +30,15 @@ gun = cfg.Analyzer(
     Gun
 )
 
+from heppy_fcc.analyzers.FirstTry import AnalyzerTry
+analyzertry = cfg.Analyzer(
+    AnalyzerTry
+)
+
 from heppy_fcc.analyzers.PFSim import PFSim
 pfsim = cfg.Analyzer(
     PFSim,
-    display = True,
+    display = False,
     verbose = False
 )
 
@@ -71,6 +76,7 @@ sequence = cfg.Sequence( [
     reader,
     # gun,
     pfsim,
+    analyzertry,
     jets,
     genjets,
     jetana,
@@ -123,7 +129,7 @@ if __name__ == '__main__':
     if len(sys.argv)==2:
         iev = int(sys.argv[1])
     loop = Looper( 'looper', config,
-                   nEvents=20000,
+                   nEvents=10,
                    nPrint=5,
                    timeReport=True)
     pfsim = loop.analyzers[1]
