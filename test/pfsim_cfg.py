@@ -4,6 +4,14 @@ import heppy.framework.config as cfg
 # input component 
 # several input components can be declared,
 # and added to the list of selected components
+
+gen_jobs = None
+do_display = True
+nevents_per_job = 20000
+
+if gen_jobs>1:
+    do_display = False
+
 inputSample = cfg.Component(
     'albers_example',
     files = ['example.root']
@@ -15,10 +23,12 @@ inputSample = cfg.Component(
 
 selectedComponents  = [inputSample]
 
-# selectedComponents = []
-# for i in range(4):
-#    component = cfg.Component(''.join(['sample_Chunk',str(i)]), files=['dummy.root'])
-#    selectedComponents.append(component)
+if gen_jobs:
+    selectedComponents = []
+    for i in range(gen_jobs):
+        component = cfg.Component(''.join(['sample_Chunk',str(i)]), files=['dummy.root'])
+        selectedComponents.append(component)
+        
     
 from heppy_fcc.analyzers.FCCReader import FCCReader
 reader = cfg.Analyzer(
@@ -38,8 +48,13 @@ analyzertry = cfg.Analyzer(
 from heppy_fcc.analyzers.PFSim import PFSim
 pfsim = cfg.Analyzer(
     PFSim,
+<<<<<<< HEAD
     display = False,
     verbose = False
+=======
+    display = do_display,
+    verbose = True
+>>>>>>> colin/master
 )
 
 
@@ -73,8 +88,7 @@ tree = cfg.Analyzer(
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
-    reader,
-    # gun,
+    gun if gen_jobs else reader,
     pfsim,
     analyzertry,
     jets,
@@ -90,7 +104,8 @@ sequence = cfg.Sequence( [
 from ROOT import gSystem
 gSystem.Load("libdatamodel")
 from eventstore import EventStore as Events
-# from heppy.framework.eventsgen import Events 
+if gen_jobs:
+    from heppy.framework.eventsgen import Events 
 config = cfg.Config(
     components = selectedComponents,
     sequence = sequence,
@@ -129,7 +144,11 @@ if __name__ == '__main__':
     if len(sys.argv)==2:
         iev = int(sys.argv[1])
     loop = Looper( 'looper', config,
+<<<<<<< HEAD
                    nEvents=10,
+=======
+                   nEvents=nevents_per_job,
+>>>>>>> colin/master
                    nPrint=5,
                    timeReport=True)
     pfsim = loop.analyzers[1]
