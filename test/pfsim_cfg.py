@@ -7,7 +7,7 @@ import heppy.framework.config as cfg
 
 gen_jobs = None
 do_display = True
-nevents_per_job = 20000
+nevents_per_job = 10
 
 if gen_jobs>1:
     do_display = False
@@ -45,16 +45,21 @@ analyzertry = cfg.Analyzer(
     AnalyzerTry
 )
 
+from heppy_fcc.analyzers.EventCounter import EventCounter
+EventCounter = cfg.Analyzer(
+    EventCounter
+)
+
+from heppy_fcc.analyzers.Zreconstructor import Zreconstructor
+Zreconstructor = cfg.Analyzer(
+    Zreconstructor
+)
+
 from heppy_fcc.analyzers.PFSim import PFSim
 pfsim = cfg.Analyzer(
     PFSim,
-<<<<<<< HEAD
-    display = False,
-    verbose = False
-=======
     display = do_display,
     verbose = True
->>>>>>> colin/master
 )
 
 
@@ -90,7 +95,9 @@ tree = cfg.Analyzer(
 sequence = cfg.Sequence( [
     gun if gen_jobs else reader,
     pfsim,
-    analyzertry,
+    #analyzertry,
+    #EventCounter,
+    Zreconstructor,
     jets,
     genjets,
     jetana,
@@ -144,11 +151,7 @@ if __name__ == '__main__':
     if len(sys.argv)==2:
         iev = int(sys.argv[1])
     loop = Looper( 'looper', config,
-<<<<<<< HEAD
-                   nEvents=10,
-=======
                    nEvents=nevents_per_job,
->>>>>>> colin/master
                    nPrint=5,
                    timeReport=True)
     pfsim = loop.analyzers[1]
