@@ -57,3 +57,24 @@ def fillJet( tree, pName, jet ):
             import pdb; pdb.set_trace()
             print jet
 
+
+# reconstructed Z (gael)
+
+def bookZ( tree, pName ):
+    var(tree, '{pName}_e'.format(pName=pName))
+    var(tree, '{pName}_pt'.format(pName=pName))
+    var(tree, '{pName}_theta'.format(pName=pName))
+    var(tree, '{pName}_phi'.format(pName=pName))
+    var(tree, '{pName}_m'.format(pName=pName))
+    var(tree, '{pName}_pdgid'.format(pName=pName))
+
+def fillZ( tree, pName, particle ):
+    fill(tree, '{pName}_e'.format(pName=pName), particle.e() )
+    fill(tree, '{pName}_pt'.format(pName=pName), particle.pt() )
+    fill(tree, '{pName}_theta'.format(pName=pName), particle.theta() )
+    fill(tree, '{pName}_phi'.format(pName=pName), particle.phi() )
+    fill(tree, '{pName}_m'.format(pName=pName), particle.m() )
+    if hasattr(particle, 'pdgid'):
+        fill(tree, '{pName}_pdgid'.format(pName=pName), particle.pdgid())
+    else:
+        fill(tree, '{pName}_pdgid'.format(pName=pName), 0)

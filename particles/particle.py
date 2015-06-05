@@ -20,6 +20,9 @@ class Particle(object):
     def phi(self):
         return self._tlv.Phi()
 
+    def eta(self):
+        return self._tlv.Eta()
+
     def m(self):
         return self._tlv.M()
 

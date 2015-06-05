@@ -4,16 +4,19 @@ class Resonance(Particle):
     """Resonance decaying to two particles (legs).
     
     A leg is a particle-like object with the following methods:
-    - q(): returns charge
+    - q(): returns charge (not mandatory)
     - p4(): returns 4-momentum TLorentzVector
     - e(): returns energy
 
     """
     def __init__(self, leg1, leg2, pid):
-        leg1, leg2 = (leg2, leg1) if leg2.e()>leg1.e() else leg1, leg2
+        (leg1, leg2) = (leg2, leg1) if leg2.e()>leg1.e() else (leg1, leg2)
         self._leg1 = leg1
         self._leg2 = leg2
-        charge = self._leg1.q()+self._leg2.q()
+        if hasattr(self._leg1, '_charge') and hasattr(self._leg2, '_charge'):
+            charge = self._leg1.q()+self._leg2.q()
+        else:
+            charge = 0
         p4 = self._leg1.p4()+self._leg2.p4()
         super(Resonance, self).__init__(pid,charge,p4)
 
