@@ -1,6 +1,6 @@
 from ROOT import *
 from ROOT import gDirectory
-from OfficialStyle import *
+from macros.OfficialStyle import *
 
 import sys 
 
