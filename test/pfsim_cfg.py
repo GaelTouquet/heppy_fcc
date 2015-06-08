@@ -6,9 +6,14 @@ import heppy.framework.config as cfg
 # several input components can be declared,
 # and added to the list of selected components
 
-gen_jobs = 1
+gen_jobs = 0
 do_display = True
 nevents_per_job = 5000
+
+
+GEN = gen_jobs 
+FCC = os.environ.get('FCCEDM', False) and not GEN
+CMS = os.environ.get('CMSSW_BASE', False) and not GEN
 
 
 if gen_jobs>1:
@@ -16,8 +21,9 @@ if gen_jobs>1:
 
 inputSample = cfg.Component(
     'albers_example',
-    # files = ['example.root']
-    files = ['gun_211_0.0to50.0_ME0_GEN_SIM_RECO.root']
+    files = ['example.root']
+    # files = ['gun_211_0.0to50.0_ME0_GEN_SIM_RECO.root']
+    # files = ['SinglePi_fullsim.root'] 
     # files = ['zqq.root'],
     # files = ['ww.root'],
     # files = ['hz.root'],
@@ -26,42 +32,35 @@ inputSample = cfg.Component(
 
 selectedComponents  = [inputSample]
 
-if gen_jobs:
+source = None
+if GEN:
     selectedComponents = []
     for i in range(gen_jobs):
         component = cfg.Component(''.join(['sample_Chunk',str(i)]), files=['dummy.root'])
         selectedComponents.append(component)
-        
-
-reader = None
-if os.environ.get('FCCEDM'):
+    from heppy_fcc.analyzers.Gun import Gun
+    source = cfg.Analyzer(
+        Gun,
+        pdgid = 130,
+        ptmin = 0.,
+        ptmax = 10.
+        )
+elif FCC:
     from heppy_fcc.analyzers.FCCReader import FCCReader
-    reader = cfg.Analyzer(
+    source = cfg.Analyzer(
         FCCReader
         )    
-elif os.environ.get('CMSSW_BASE'):
+elif CMS:
     from heppy_fcc.analyzers.CMSReader import CMSReader
-    reader = cfg.Analyzer(
+    source = cfg.Analyzer(
         CMSReader,
         gen_particles = 'genParticles',
         pf_particles = 'particleFlow'
         )
 else:
-    import sys
-    sys.exit(1)
+    raise ValueError('not a generator job, and experience unrecognized. Set the CMS or FCC environment')
 
-from heppy_fcc.analyzers.Gun import Gun
-gun = cfg.Analyzer(
-    Gun,
-    pdgid = 130,
-    ptmin = 0.,
-    ptmax = 10.
-)
 
-from heppy_fcc.analyzers.GenAnalyzer import GenAnalyzer
-genana = cfg.Analyzer(
-    GenAnalyzer
-)
 
 from heppy_fcc.analyzers.FirstTry import AnalyzerTry
 analyzertry = cfg.Analyzer(
@@ -93,6 +92,7 @@ genjets = cfg.Analyzer(
     instance_label = 'gen',
     particles = 'gen_particles_stable'
 )
+
 
 # jets from pfsim 
 
@@ -127,28 +127,35 @@ jetsequence = [
 
 # pf jet sequence
 
-pfjetsequence = copy.deepcopy(jetsequence)
-for ana in pfjetsequence: 
-    ana.instance_label = 'pf'
-    if hasattr(ana, 'jets'):
-        ana.jets = 'pf_jets'
-    if hasattr(ana, 'particles'):
-        ana.particles = 'pf_particles'
+if CMS:
+    pfjetsequence = copy.deepcopy(jetsequence)
+    for ana in pfjetsequence: 
+        ana.instance_label = 'pf'
+        if hasattr(ana, 'jets'):
+            ana.jets = 'pf_jets'
+        if hasattr(ana, 'particles'):
+            ana.particles = 'pf_particles'
     
-
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
-    gun if gen_jobs else reader,
+    source,
     pfsim,
     genjets,
     ] )
 
 sequence.extend(jetsequence)
-if os.environ.get('CMSSW_BASE'):
+if CMS:
     sequence.extend(pfjetsequence)
 
+if FCC:
+    from heppy_fcc.analyzers.GenAnalyzer import GenAnalyzer
+    genana = cfg.Analyzer(
+        GenAnalyzer
+    )
+    # sequence.append(genana)
+    
 # inputSample.files.append('albers_2.root')
 # inputSample.splitFactor = 2  # splitting the component in 2 chunks
 
