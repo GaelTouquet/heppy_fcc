@@ -15,6 +15,9 @@ def bookParticle( tree, pName ):
     var(tree, '{pName}_eta'.format(pName=pName))
     var(tree, '{pName}_phi'.format(pName=pName))
     var(tree, '{pName}_m'.format(pName=pName))
+    var(tree, '{pName}_px'.format(pName=pName))
+    var(tree, '{pName}_py'.format(pName=pName))
+    var(tree, '{pName}_pz'.format(pName=pName))
 
 def fillParticle( tree, pName, particle ):
     fill(tree, '{pName}_e'.format(pName=pName), particle.e() )
@@ -23,6 +26,9 @@ def fillParticle( tree, pName, particle ):
     fill(tree, '{pName}_eta'.format(pName=pName), particle.eta() )
     fill(tree, '{pName}_phi'.format(pName=pName), particle.phi() )
     fill(tree, '{pName}_m'.format(pName=pName), particle.m() )
+    fill(tree, '{pName}_px'.format(pName=pName), particle.p4().Px() )
+    fill(tree, '{pName}_py'.format(pName=pName), particle.p4().Py() )
+    fill(tree, '{pName}_pz'.format(pName=pName), particle.p4().Pz() )
     
 # jet
 
@@ -67,6 +73,10 @@ def bookZ( tree, pName ):
     var(tree, '{pName}_phi'.format(pName=pName))
     var(tree, '{pName}_m'.format(pName=pName))
     var(tree, '{pName}_pdgid'.format(pName=pName))
+    var(tree, '{pName}_px'.format(pName=pName))
+    var(tree, '{pName}_py'.format(pName=pName))
+    var(tree, '{pName}_pz'.format(pName=pName))
+
 
 def fillZ( tree, pName, particle ):
     fill(tree, '{pName}_e'.format(pName=pName), particle.e() )
@@ -74,6 +84,9 @@ def fillZ( tree, pName, particle ):
     fill(tree, '{pName}_theta'.format(pName=pName), particle.theta() )
     fill(tree, '{pName}_phi'.format(pName=pName), particle.phi() )
     fill(tree, '{pName}_m'.format(pName=pName), particle.m() )
+    fill(tree, '{pName}_px'.format(pName=pName), particle.p4().Px() )
+    fill(tree, '{pName}_py'.format(pName=pName), particle.p4().Py() )
+    fill(tree, '{pName}_pz'.format(pName=pName), particle.p4().Pz() )
     if hasattr(particle, 'pdgid'):
         fill(tree, '{pName}_pdgid'.format(pName=pName), particle.pdgid())
     else:
