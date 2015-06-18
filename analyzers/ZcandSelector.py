@@ -13,4 +13,4 @@ class Zcandselector(Analyzer):
         sorted_zcand = sorted( zcand,
                                key = lambda x : abs(x.m() - 91.187621))
         if len(sorted_zcand)>0:
-            event.zcands = sorted_zcand[0]
+            event.zcands = sorted_zcand

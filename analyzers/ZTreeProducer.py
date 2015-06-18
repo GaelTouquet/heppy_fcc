@@ -24,7 +24,11 @@ class ZTreeProducer(Analyzer):
 
     def process(self, event):
         self.tree.reset()
-        zcand = getattr(event, 'zcand', None)
+        zcands = getattr(event, 'zcands', [])
+        if zcands != []:
+            zcand = zcands[0]
+        else:
+            zcand = None
         if zcand:
             z = zcand
             fillZ(self.tree, 'z', z)

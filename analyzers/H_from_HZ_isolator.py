@@ -6,8 +6,9 @@ class H_isolator(Analyzer):
     
 
     def process(self, event):
-        if hasattr(event, 'zcand'):
-            zcand = getattr(event, 'zcand')
+        if hasattr(event, 'zcands'):
+            zcands = getattr(event, 'zcands')
+            zcand = zcands[0]
             subprocess_ee = [ptc for ptc in event.gen_particles if abs(ptc.pdgid())==11 and ptc.status()==21]
             p4 = subprocess_ee[0].p4()+subprocess_ee[1].p4()
             p4 = p4 - zcand.p4()

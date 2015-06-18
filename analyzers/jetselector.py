@@ -5,8 +5,9 @@ class JetSelector(Analyzer):
     """Creates a lists of the three most energetic jets from event.gen_jets in event.jets_Zcandidates."""
 
     def process(self, event):
-        if hasattr(event, self.cfg_ana.particle):
-            zcand = getattr(event, self.cfg_ana.particle)
+        if hasattr(event, self.cfg_ana.particles):
+            zcands = getattr(event, self.cfg_ana.particles)
+            zcand = zcands[0]
             legs = [zcand.leg1(), zcand.leg2()]
             selected_jets, useless = cleanObjectCollection( event.gen_jets,
                                                             legs,
