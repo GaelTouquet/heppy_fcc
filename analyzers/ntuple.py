@@ -76,6 +76,7 @@ def bookZ( tree, pName ):
     var(tree, '{pName}_px'.format(pName=pName))
     var(tree, '{pName}_py'.format(pName=pName))
     var(tree, '{pName}_pz'.format(pName=pName))
+    var(tree, '{pName}_q'.format(pName=pName))
 
 
 def fillZ( tree, pName, particle ):
@@ -87,6 +88,7 @@ def fillZ( tree, pName, particle ):
     fill(tree, '{pName}_px'.format(pName=pName), particle.p4().Px() )
     fill(tree, '{pName}_py'.format(pName=pName), particle.p4().Py() )
     fill(tree, '{pName}_pz'.format(pName=pName), particle.p4().Pz() )
+    fill(tree, '{pName}_q'.format(pName=pName), particle.q() )
     if hasattr(particle, 'pdgid'):
         fill(tree, '{pName}_pdgid'.format(pName=pName), particle.pdgid())
     else:

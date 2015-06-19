@@ -1,6 +1,6 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.utils.deltar import inConeCollection
-from heppy_fcc.particles.tlv.resonance import Resonance
+from heppy_fcc.particles.tlv.particle import Particle
 import copy
 
 class LeptonSelector(Analyzer):
@@ -9,12 +9,21 @@ class LeptonSelector(Analyzer):
     def process(self, event):
         pdgid = self.cfg_ana.pdgid
         leptons = []
-        photons = [ptc for ptc in event.gen_particles_stable if ptc.pdgid()==22 and ptc.e()>1]
         for ptc in event.gen_particles_stable:
-            if abs(ptc.pdgid()) == pdgid and ptc.e()>10:
-                close_photons = inConeCollection(ptc, photons, 0.5)
+            if abs(ptc.pdgid()) == pdgid:
+                other_ptcs = []
+                for part in event.gen_particles_stable:
+                    if part!=ptc:
+                        if part.pdgid()==22:
+                            if part.e()>0.5:
+                                other_ptcs.append(part)
+                        else:
+                            other_ptcs.append(part)
+                close_ptcs = inConeCollection(ptc, other_ptcs, 0.4)
+                if any(particle.pdgid()!=22 for particle in close_ptcs):
+                    continue
                 reso = copy.deepcopy(ptc)
-                for photon in close_photons:
-                    reso = Resonance(reso, photon, ptc.pdgid())
+                for photon in [ph for ph in close_ptcs if ph.pdgid()==22]:
+                    reso = Particle(ptc.pdgid(), ptc.q(), (reso.p4()+photon.p4()))
                 leptons.append(reso)
         setattr(event, self.cfg_ana.particles, leptons)

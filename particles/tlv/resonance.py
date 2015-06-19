@@ -13,10 +13,7 @@ class Resonance(Particle):
         (leg1, leg2) = (leg2, leg1) if leg2.e()>leg1.e() else (leg1, leg2)
         self._leg1 = leg1
         self._leg2 = leg2
-        if hasattr(self._leg1, '_charge') and hasattr(self._leg2, '_charge'):
-            charge = self._leg1.q()+self._leg2.q()
-        else:
-            charge = 0
+        charge = leg1.q()+leg2.q()
         p4 = self._leg1.p4()+self._leg2.p4()
         super(Resonance, self).__init__(pid,charge,p4)
 

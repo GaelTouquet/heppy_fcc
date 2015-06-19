@@ -144,6 +144,7 @@ if __name__ == '__main__':
     cuts.append('leg1_leg2_acollinearity>100')
     cuts.append('abs(z_theta*(360/(2*3.141592653589793)))<80')
     cuts.append('z_pt>10')
+    cuts.append('z_q==0')
     #cuts.append('jet1_e<(0.8*(240-91))')
     cuts.append('abs(z_pz)<50')
     cut = ' && '.join(cuts)

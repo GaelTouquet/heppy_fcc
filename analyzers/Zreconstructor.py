@@ -7,7 +7,8 @@ class Zreconstructor(Analyzer):
 
     def process(self, event):
         particles = getattr(event, self.cfg_ana.particles)
+        selected_particles = [ptc for ptc in particles if ptc.e()>10]
         setattr( event,
                  ('zcandidates_from_'+self.cfg_ana.particles),
-                 [ Resonance(couple[0],couple[1],23) for couple in combinations(particles,2) ]
+                 [ Resonance(couple[0],couple[1],23) for couple in combinations(selected_particles,2) ]
                  )
