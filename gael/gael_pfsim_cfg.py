@@ -8,7 +8,7 @@ import heppy.framework.config as cfg
 
 gen_jobs = None
 do_display = False
-nevents_per_job = 20000
+nevents_per_job = 100000
 
 if gen_jobs>1:
     do_display = False
@@ -59,14 +59,16 @@ es_selector = cfg.Analyzer(
     LeptonSelector,
     instance_label = 'es',
     particles = 'es',
-    pdgid = 11
+    pdgid = 11,
+    recognition_factor = 0.65
 )
 
 mus_selector = cfg.Analyzer(
     LeptonSelector,
     instance_label = 'mus',
     particles = 'mus',
-    pdgid = 13
+    pdgid = 13,
+    recognition_factor = 0.95
 )
 
 from heppy_fcc.analyzers.jetselector import JetSelector
@@ -83,16 +85,16 @@ mus_jetselector = cfg.Analyzer(
 )
 
 from heppy_fcc.analyzers.Zreconstructor import Zreconstructor
-smeared_ee_Zreconstructor = cfg.Analyzer(
+ee_Zreconstructor = cfg.Analyzer(
     Zreconstructor,
     instance_label = 'ee',
-    particles = 'smeared_es'
+    particles = 'es'
 )
 
-smeared_mumu_Zreconstructor = cfg.Analyzer(
+mumu_Zreconstructor = cfg.Analyzer(
     Zreconstructor,
     instance_label = 'mumu',
-    particles = 'smeared_mus'
+    particles = 'mus'
 )
 
 #jetjet_Zreconstructor = cfg.Analyzer(
@@ -102,17 +104,9 @@ smeared_mumu_Zreconstructor = cfg.Analyzer(
 #)
 
 from heppy_fcc.analyzers.Particle_Smeeror import ParticleSmearor
-mus_smearer = cfg.Analyzer(
+ptc_smeerer = cfg.Analyzer(
     ParticleSmearor,
-    instance_label = 'mus',
-    particles = 'mus',
-    smearfactor = 0.02
-)
-
-es_smearer = cfg.Analyzer(
-    ParticleSmearor,
-    instance_label = 'es',
-    particles = 'es',
+    particles = 'gen_particles_stable',
     smearfactor = 0.02
 )
 
@@ -126,7 +120,7 @@ es_smearer = cfg.Analyzer(
 from heppy_fcc.analyzers.ZcandSelector import Zcandselector
 zcandselect = cfg.Analyzer(
     Zcandselector,
-    zcand_types = ['smeared_es','smeared_mus','smeared_jets']
+    zcand_types = ['es','mus']
 )
 
 #from heppy_fcc.analyzers.EventFinder import EventFinder
@@ -195,7 +189,7 @@ tree = cfg.Analyzer(
 jetsequence = [
     jets,
     jetana, 
-    tree
+    #tree
 ]
 
 # pf jet sequence
@@ -214,28 +208,27 @@ for ana in pfjetsequence:
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
     gun if gen_jobs else reader,
-    pfsim,
+    #pfsim,
     genjets,
     ] )
 
-sequence.extend(jetsequence)
+#sequence.extend(jetsequence)
 if os.environ.get('CMSSW_BASE'):
     sequence.extend(pfjetsequence)
 
 gaelsequence = [
     #gaelgenana,
+    ptc_smeerer,
     es_selector,
-    #mus_selector,
-    es_smearer,
-    #mus_smearer,
-    smeared_ee_Zreconstructor,
-    #smeared_mumu_Zreconstructor,
+    mus_selector,
+    ee_Zreconstructor,
+    mumu_Zreconstructor,
     #jetjet_Zreconstructor,
     zcandselect,
     es_jetselector,
-    #mus_jetselector,
+    mus_jetselector,
     h_isolator,
-    ztree,
+    ztree
     #eventfinder
 ]
 
@@ -280,8 +273,8 @@ if __name__ == '__main__':
         if iev is None:
             iev = loop.iEvent
         loop.process(iev)
-        if display:
-            display.draw()
+        #if display:
+        #    display.draw()
 
     def next():
         loop.process(loop.iEvent+1)
@@ -295,10 +288,10 @@ if __name__ == '__main__':
                    nEvents=nevents_per_job,
                    nPrint=5,
                    timeReport=True)
-    pfsim = loop.analyzers[1]
-    display = getattr(pfsim, 'display', None)
-    simulator = pfsim.simulator
-    detector = simulator.detector
+    #pfsim = loop.analyzers[1]
+    #display = getattr(pfsim, 'display', None)
+    #simulator = pfsim.simulator
+    #detector = simulator.detector
     if iev is not None:
         process(iev)
     else:
