@@ -8,7 +8,7 @@ import heppy.framework.config as cfg
 
 gen_jobs = None
 do_display = False
-nevents_per_job = 100000
+nevents_per_job = 500000
 
 if gen_jobs>1:
     do_display = False

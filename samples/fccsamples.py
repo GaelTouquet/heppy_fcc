@@ -31,7 +31,7 @@ example = cfg.Component( 'example',
                     files = ['../gael/example.root'])
 
 selected_event_type = [
-    #WW
+    WW
     #WW_mumu
     #WW_ee
     #WW_tautau
@@ -40,6 +40,6 @@ selected_event_type = [
     #HZ_mumu
     #HZ_mumu_ee
     #ZZ
-    example
+    #example
 ]
 
