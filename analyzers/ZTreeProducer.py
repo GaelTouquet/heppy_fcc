@@ -21,9 +21,13 @@ class ZTreeProducer(Analyzer):
         bookJet(self.tree, 'jet3')
         bookParticle(self.tree, 'H')
         var(self.tree, 'leg1_leg2_acollinearity')
+        var(self.tree, 'leg1_leg2_acoplanarity')
 
     def process(self, event):
         self.tree.reset()
+        if event.not_selected_event == True:
+            print 'found'
+            return None
         zcands = getattr(event, 'zcands', [])
         if zcands != []:
             zcand = zcands[0]
@@ -34,8 +38,18 @@ class ZTreeProducer(Analyzer):
             fillZ(self.tree, 'z', z)
             fillZ(self.tree, 'leg1', z.leg1())
             fillZ(self.tree, 'leg2', z.leg2())
-            acollinearity = (z.leg1().p4().Vect().Angle(z.leg2().p4().Vect()))*(360/(2*math.pi))
+            acollinearity = 0
+            for coord in ['Px','Py','Pz']:
+                acollinearity += getattr(z.leg1().p4(), coord)()*getattr(z.leg2().p4(), coord)()
+            acollinearity /= getattr(z.leg1().p4(), 'Mag')()*getattr(z.leg2().p4(), 'Mag')()
+            if acollinearity >= 1.0 : acollinearity = 1. - (1e-12)
+            if acollinearity <= -1.0 : acollinearity = -1. + (1e-12)
+            acollinearity = math.acos(acollinearity)*180./(math.pi)
             fill(self.tree, 'leg1_leg2_acollinearity', acollinearity)
+            acoplanarity = (z.leg1().p4().Vect().Unit().Cross(z.leg2().p4().Vect().Unit()))
+            acoplanarity = abs(acoplanarity.z())
+            acoplanarity = (math.asin(acoplanarity))*(180./(math.pi))
+            fill(self.tree, 'leg1_leg2_acoplanarity', acoplanarity)
             if len(event.sorted_selected_jets)>0:
                 sorted_jets = event.sorted_selected_jets
                 jet = sorted_jets[0]

@@ -54,3 +54,10 @@ class Particle(object):
             m = self.m()
             )
     
+    def __deepcopy__(self, memodict={}):
+        import copy
+        newone = copy.copy(self)
+        for attr, val in newone.__dict__.iteritems():
+            if attr not in ['mothers','daughters']:
+                setattr(newone, attr, copy.deepcopy(val, memodict))
+        return newone

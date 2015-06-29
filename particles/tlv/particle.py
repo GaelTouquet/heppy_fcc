@@ -8,3 +8,4 @@ class Particle(BaseParticle):
         self._charge = charge
         self._tlv = tlv
         self._status = status
+
